@@ -19,13 +19,13 @@ def on_key_press(event):
     
     elif event.key == '3':
         image_path_to_move = image_path  # Replace with the actual path to your image
-        destination_folder = 'data/unknown'  # Replace with the desired destination folder
+        destination_folder = 'data/egg'  # Replace with the desired destination folder
         move_image_to_folder(image_path_to_move, destination_folder)
         plt.close()
 
     elif event.key == '4':
         image_path_to_move = image_path  # Replace with the actual path to your image
-        destination_folder = 'data/egg'  # Replace with the desired destination folder
+        destination_folder = 'data/unknown'  # Replace with the desired destination folder
         move_image_to_folder(image_path_to_move, destination_folder)
         plt.close()
 
@@ -44,8 +44,18 @@ def plot_images_in_folder(folder_path):
 
         # Read and plot the image
         image = imread(image_path)
-        plt.imshow(image)
-        plt.title(image_file)
+        fig, ax = plt.subplots()
+        ax.imshow(image)
+        ax.set_title(image_file)
+
+        # Add text under the image
+        text_to_add = "1: Copepod, 2: Nauplii, 3: Egg, 4: Unknown"
+        ax.text(0.5, -0.1, text_to_add, transform=ax.transAxes,
+                fontsize=12, color='white', ha='center', va='center', backgroundcolor='black')
+
+        # Remove the axes for a cleaner look (optional)
+        ax.axis('off')
+
 
         # Connect the keypress event handler
         plt.connect('key_press_event', on_key_press)
@@ -69,5 +79,5 @@ def move_image_to_folder(image_path, destination_folder):
         print(f"Error: Unable to move the image. {e}")
 
 # Replace 'your_folder_path' with the path to the folder containing your images
-folder_path = 'digits'
+folder_path = 'E:/C-Feed/27_02_2024_Data_gathering/27_02_2024_Data_gathering_1_nauplii_full_test_03'
 plot_images_in_folder(folder_path)
