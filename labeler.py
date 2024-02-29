@@ -79,5 +79,5 @@ def move_image_to_folder(image_path, destination_folder):
         print(f"Error: Unable to move the image. {e}")
 
 # Replace 'your_folder_path' with the path to the folder containing your images
-folder_path = 'E:/C-Feed/27_02_2024_Data_gathering/27_02_2024_Data_gathering_1_nauplii_full_test_03'
+folder_path = 'C:/Users/jonatala/Documents/MasterThesisJL/Image-Classification-Copepod/data/validate'
 plot_images_in_folder(folder_path)
