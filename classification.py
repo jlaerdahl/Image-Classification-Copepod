@@ -58,6 +58,17 @@ model = model.fit(trainset,
                     epochs=5,
                     validation_data=valset)
 
+
+
+
+
+
+
+
+
+
+
+
 # predicted = model.predict(testset)
 
 # fig, ax = plt.subplots(ncols=20, nrows=2, figsize=(20,20))

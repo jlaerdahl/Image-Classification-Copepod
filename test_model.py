@@ -37,28 +37,39 @@ def threshold_image(image_path, threshold_value):
 
     ellipse = cv2.fitEllipse(max_contour)
 
+    return ellipse, max_contour, closed_image
+
     # cv2.ellipse(drawing, ellipse, (0, 0, 255), 2)
-
-    object_inside_ellipse, _ = checkPercentage(closed_image, ellipse)
-
-    best_percentage = 0
-
-    # Modify the ellipse with the rotation angle
-    while best_percentage < 90:
-
-        best_ellipse_rot, best_percentage = rot_ellipse(closed_image, ellipse, max_contour, best_percentage)
-        best_ellipse_pos, best_percentage = repos_ellipse(closed_image, best_ellipse_rot, max_contour, best_percentage)
-        ellipse, best_percentage = resize_ellipse(closed_image, best_ellipse_pos, max_contour, best_percentage)
-
-        print(best_percentage)
 
     # object_inside_ellipse, _ = checkPercentage(closed_image, ellipse)
 
-    cv2.ellipse(drawing, ellipse, (0, 0, 255), 2)
+    # best_percentage = 0
 
-    cv2.imshow("Closed Image", drawing)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # # Modify the ellipse with the rotation angle
+    # while best_percentage < 90:
+
+    #     best_ellipse_rot, best_percentage = rot_ellipse(closed_image, ellipse, max_contour, best_percentage)
+    #     best_ellipse_pos, best_percentage = repos_ellipse(closed_image, best_ellipse_rot, max_contour, best_percentage)
+    #     ellipse, best_percentage = resize_ellipse(closed_image, best_ellipse_pos, max_contour, best_percentage)
+
+    #     print(best_percentage)
+
+    #     cv2.ellipse(drawing, ellipse, (0, 0, 255), 2)
+
+    #     cv2.drawContours(drawing, [max_contour], -1, (0, 255, 0), 2)
+
+    #     # Display the rotated ellipse
+    #     cv2.imshow("Best so far", drawing)
+    #     cv2.waitKey(0)
+    #     cv2.destroyAllWindows()
+
+    # # object_inside_ellipse, _ = checkPercentage(closed_image, ellipse)
+
+    # cv2.ellipse(drawing, ellipse, (0, 0, 255), 2)
+
+    # cv2.imshow("Closed Image", drawing)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
 def resize_ellipse(image, best_ellipse, max_contour, best_percentage):
     _, check_ratio_inside_pre = checkPercentage(image, best_ellipse)
@@ -193,7 +204,43 @@ def checkPercentage(image, ellipse):
     return filled_area_ratio, total_pixels_of_object_inside_ellipse
 
 
+def length_calc(ellipse, max_contour, image):
+    # Extract major and minor axes
+    major_axis, minor_axis = ellipse[1]
+
+    # Calculate orientation
+    orientation = ellipse[2]
+
+    # Sort contour points based on their angle
+    contour_points_sorted = sorted(max_contour, key=lambda point: np.arctan2(point[0][1] - ellipse[0][1], point[0][0] - ellipse[0][0]))
+
+    # Place ellipse on contour
+    new_major_axis_endpoint = contour_points_sorted[-1][0]
+    new_minor_axis_endpoint = contour_points_sorted[-2][0]
+
+    # Create a new ellipse with the sorted points
+    new_ellipse = ((new_major_axis_endpoint[0], new_minor_axis_endpoint[1]), (major_axis, minor_axis), orientation)
+    
+    drawing = np.zeros((image.shape[0], image.shape[1], 3), dtype=np.uint8)
+
+    # Calculate ellipse points
+    ellipse_points = cv2.ellipse2Poly(new_ellipse[0], (int(new_ellipse[1][0] / 2), int(new_ellipse[1][1] / 2)), int(new_ellipse[2]), 0, 360, 10)
+
+    # Draw the rotated ellipse
+    cv2.polylines(drawing, [ellipse_points], isClosed=True, color=(0, 0, 255), thickness=2)
+
+    # Draw the contour
+    cv2.drawContours(drawing, [max_contour], -1, (0, 255, 0), 2)
+
+    # Display the result
+    cv2.imshow('Result', drawing)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
 
 # Replace 'your_image_path.jpg' with the path to your image
 # Replace 'your_threshold_value' with the desired threshold value
-threshold_image("nauplii.jpg", 230)
+ellipse, max_contour, closed_image = threshold_image("data/nauplii/11_04_27_210448_3.jpg", 230)
+
+length_calc(ellipse, max_contour, closed_image)
